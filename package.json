@@ -1,0 +1,20 @@
+{
+  "name": "call_for_volonters",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "morgan": "^1.10.0",
+    "mysql2": "^2.3.3",
+    "nodemailer": "^6.7.5",
+    "sequelize": "^6.20.1"
+  }
+}
