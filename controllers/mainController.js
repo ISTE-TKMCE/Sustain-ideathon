@@ -1,8 +1,10 @@
 const { User, Referal } = require("../models");
 const payController = require("./payController");
+require('dotenv').config()
+
 
 const index = (req, res) => {
-  res.render("index");
+  res.render("index" , {keyId:process.env.KEY_ID});
 };
 
 const form = async (req, res) => {

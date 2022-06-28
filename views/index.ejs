@@ -21,6 +21,7 @@
       href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- Vendor CSS Files -->
     <link href="assets/vendor/aos/aos.css" rel="stylesheet" />
@@ -212,7 +213,12 @@
 
           <div class="row">
             <div class="col-lg-8 mt-5 mt-lg-0 mx-auto">
-              <form action="/" method="post" data-aos="fade-left">
+              <form
+                action="/"
+                method="post"
+                data-aos="fade-left"
+                id="idea-form"
+              >
                 <div class="row">
                   <div class="col-md-6 form-group">
                     <input
@@ -374,7 +380,6 @@
                       name="refid"
                       id="refid"
                       placeholder="Ref ID"
-                      required
                     />
                   </div>
                 </div>
@@ -386,6 +391,7 @@
               </div> -->
                 <div class="text-center mt-5">
                   <button
+                    id="submitBtn"
                     type="submit"
                     class="btn"
                     style="border: 1px solid #7cc576"
@@ -421,29 +427,96 @@
     </footer>
     <!-- End Footer -->
 
-    <form action="https://www.example.com/payment/success/" method="POST">
-      <script
-        src="https://checkout.razorpay.com/v1/checkout.js"
-        data-key="YOUR_KEY_ID"
-        data-amount="29935"
-        data-currency="INR"
-        data-order_id="order_CgmcjRh9ti2lP7"
-        data-buttontext="Pay with Razorpay"
-        data-name="Acme Corp"
-        data-description="A Wild Sheep Chase is the third novel by Japanese author Haruki Murakami"
-        data-image="https://example.com/your_logo.jpg"
-        data-prefill.name="Gaurav Kumar"
-        data-prefill.email="gaurav.kumar@example.com"
-        data-theme.color="#F37254"
-      ></script>
-      <input type="hidden" custom="Hidden Element" name="hidden" />
-    </form>
-
     <a
       href="#"
       class="back-to-top d-flex align-items-center justify-content-center"
       ><i class="bi bi-arrow-up-short"></i
     ></a>
+
+    <!-- ............................................ -->
+
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+    <button id="rzp-button1">Pay</button>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+      var orderId;
+      $(document).ready(function () {
+        var settings = {
+          url: "/create/orderId",
+          method: "POST",
+          timeout: 0,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          data: JSON.stringify({
+            amount: "2000",
+          }),
+        };
+
+        //creates new orderId everytime
+        $.ajax(settings).done(function (response) {
+          orderId = response.orderId;
+          console.log(response);
+          $("button").show();
+        });
+      });
+
+      // document.getElementById("rzp-button1").onclick = function (e) {
+
+      const initPayment =  () => {
+        var options = {
+          key: "<%=keyId%>", // Enter the Key ID generated from the Dashboard
+          amount: "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+          currency: "INR",
+          name: "Athena TKMCE",
+          description: "Test Transaction",
+          image: "https://example.com/your_logo",
+          order_id: orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+          handler: function (response) {
+            console.log(response);
+
+            //starting verification
+            document.getElementById('submitBtn').innerHTML = '<i class="fa fa-refresh fa-spin"></i>  Verifying'
+
+            var data = {
+              url: "/api/payment/verify",
+              method: "POST",
+              timeout: 0,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              data: JSON.stringify({ response }),
+            };
+
+            $.ajax(data).done(function (response) {
+              console.log(response);
+
+              response.signatureIsValid ? window.location='/welcome' : alert('Your payment is not verified. This may be a techinical issue. Please contact any of the cordinators.')
+            });
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        };
+
+        var rzp1 = new Razorpay(options);
+        rzp1.on("payment.failed", function (response) {
+          alert(response.error.code);
+          alert(response.error.description);
+          alert(response.error.source);
+          alert(response.error.step);
+          alert(response.error.reason);
+          alert(response.error.metadata.order_id);
+          alert(response.error.metadata.payment_id);
+        });
+
+        rzp1.open();
+      };
+    </script>
+
+    <!-- ............................................ -->
 
     <!-- Vendor JS Files -->
     <script src="assets/vendor/aos/aos.js"></script>
@@ -467,6 +540,22 @@
           refbx.value = "";
           refbx.removeAttribute("required", "");
         }
+      });
+
+      //form submit
+      document.forms["idea-form"].addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        document.getElementById('submitBtn').innerHTML = '<i class="fa fa-spinner fa-spin"></i>  Loading'
+        fetch(event.target.action, { method: "POST", body: new URLSearchParams(new FormData(event.target)) })
+          .then((resp) =>   resp.json())
+          .then((body) => {
+            console.log(body);
+            body.Ok ? initPayment() : alert(body.message);
+          })
+          .catch((error) => {
+            alert('Something went wrong, Please try again later')
+          });
       });
     </script>
   </body>
