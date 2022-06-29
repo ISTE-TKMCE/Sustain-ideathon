@@ -13,7 +13,7 @@ const welcome = (req, res) => {
 const form = async (req, res) => {
   console.log(req.body);
 
-  if (req.body.refid) {
+  if (req.body.isRefId) {
     const ref = await Referal.findOne({ where: { cacode: req.body.refid } });
 
     if (ref) {
