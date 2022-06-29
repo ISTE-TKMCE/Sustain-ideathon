@@ -452,6 +452,63 @@
     <!-- Template Main JS File -->
     <script src="assets/js/main.js"></script>
     <script>
+
+      
+const initPayment =  () => {
+        var options = {
+          key: "<%=keyId%>", // Enter the Key ID generated from the Dashboard
+          amount: "<%=amount%>", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+          currency: "INR",
+          name: "Athena TKMCE",
+          description: "Test Transaction",
+          image: "https://example.com/your_logo",
+          order_id: orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+          handler: function (response) {
+            console.log(response);
+
+            //starting verification
+            document.getElementById('submitBtn').innerHTML = '<i class="fa fa-refresh fa-spin"></i>  Verifying'
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('teamleader').value;
+            const college = document.getElementById('college').value;
+
+            var data = {
+              url: "/api/payment/verify",
+              method: "POST",
+              timeout: 0,
+              headers: {
+                "Content-Type": "application/json",
+              },
+              data: JSON.stringify({ response , email,name,college }),
+            };
+
+            $.ajax(data).done(function (response) {
+              console.log(response);
+
+              response.signatureIsValid ? window.location='/welcome' : alert('Your payment is not verified. This may be a techinical issue. Please contact any of the cordinators.')
+            });
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        };
+
+        var rzp1 = new Razorpay(options);
+        rzp1.on("payment.failed", function (response) {
+          alert(response.error.code);
+          alert(response.error.description);
+          alert(response.error.source);
+          alert(response.error.step);
+          alert(response.error.reason);
+          alert(response.error.metadata.order_id);
+          alert(response.error.metadata.payment_id);
+        });
+
+        rzp1.open();
+      };
+
+
+
       var chk = document.getElementById("refCheck");
       var refbx = document.getElementById("refid");
       chk.addEventListener("change", (e) => {
@@ -512,58 +569,6 @@
 
       // document.getElementById("rzp-button1").onclick = function (e) {
 
-      const initPayment =  () => {
-        var options = {
-          key: "<%=keyId%>", // Enter the Key ID generated from the Dashboard
-          amount: "<%=amount%>", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-          currency: "INR",
-          name: "Athena TKMCE",
-          description: "Test Transaction",
-          image: "https://example.com/your_logo",
-          order_id: orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-          handler: function (response) {
-            console.log(response);
-
-            //starting verification
-            document.getElementById('submitBtn').innerHTML = '<i class="fa fa-refresh fa-spin"></i>  Verifying'
-            const email = document.getElementById('email').value;
-            const name = document.getElementById('teamleader').value;
-            const college = document.getElementById('college').value;
-
-            var data = {
-              url: "/api/payment/verify",
-              method: "POST",
-              timeout: 0,
-              headers: {
-                "Content-Type": "application/json",
-              },
-              data: JSON.stringify({ response , email,name,college }),
-            };
-
-            $.ajax(data).done(function (response) {
-              console.log(response);
-
-              response.signatureIsValid ? window.location='/welcome' : alert('Your payment is not verified. This may be a techinical issue. Please contact any of the cordinators.')
-            });
-          },
-          theme: {
-            color: "#3399cc",
-          },
-        };
-
-        var rzp1 = new Razorpay(options);
-        rzp1.on("payment.failed", function (response) {
-          alert(response.error.code);
-          alert(response.error.description);
-          alert(response.error.source);
-          alert(response.error.step);
-          alert(response.error.reason);
-          alert(response.error.metadata.order_id);
-          alert(response.error.metadata.payment_id);
-        });
-
-        rzp1.open();
-      };
     </script>
 
   </body>
