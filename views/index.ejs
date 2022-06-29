@@ -396,7 +396,7 @@
                     class="btn"
                     style="border: 1px solid #7cc576"
                   >
-                    Register ₹200
+                    Register ₹ <%=amount%>
                   </button>
                 </div>
               </form>
@@ -436,8 +436,6 @@
     <!-- ............................................ -->
 
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-
-    <button id="rzp-button1">Pay</button>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
@@ -468,7 +466,7 @@
       const initPayment =  () => {
         var options = {
           key: "<%=keyId%>", // Enter the Key ID generated from the Dashboard
-          amount: "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+          amount: "<%=amount%>", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
           currency: "INR",
           name: "Athena TKMCE",
           description: "Test Transaction",
@@ -480,6 +478,8 @@
             //starting verification
             document.getElementById('submitBtn').innerHTML = '<i class="fa fa-refresh fa-spin"></i>  Verifying'
             const email = document.getElementById('email').value;
+            const name = document.getElementById('teamleader').value;
+            const college = document.getElementById('college').value;
 
             var data = {
               url: "/api/payment/verify",
@@ -488,7 +488,7 @@
               headers: {
                 "Content-Type": "application/json",
               },
-              data: JSON.stringify({ response , email }),
+              data: JSON.stringify({ response , email,name,college }),
             };
 
             $.ajax(data).done(function (response) {
@@ -552,9 +552,15 @@
           .then((resp) =>   resp.json())
           .then((body) => {
             console.log(body);
-            body.Ok ? initPayment() : alert(body.message);
+            if(body.Ok) {
+              initPayment()
+            }else{
+              alert(body.message);
+              document.getElementById('submitBtn').innerHTML = 'Submit';
+            }
           })
           .catch((error) => {
+            document.getElementById('submitBtn').innerHTML = 'Submit';
             alert('Something went wrong, Please try again later')
           });
       });

@@ -1,6 +1,8 @@
 const { User, Referal } = require("../models");
 const Razorpay = require("razorpay");
 require("dotenv").config();
+const mailController = require("./mailController");
+
 
 const addUserWithoutPayment = async (req, res) => {
   await User.create(req.body)
@@ -13,7 +15,9 @@ const addUserWithoutPayment = async (req, res) => {
       if(err.name == 'SequelizeUniqueConstraintError'){
         const user =   await User.findOne({ where: { email: req.body.email } })
         user.paymentId ?  res.json({ Ok: false, message: "Already registered" }) : res.json({ Ok: true });
-      }else res.json({ Ok: false, message: "Something went wrong" });
+      }else{
+        res.json({ Ok: false, message: "Something went wrong" });
+      } 
     });
 };
 
@@ -48,6 +52,7 @@ const verifyPayment = (req, res) => {
   var response = { signatureIsValid: "false" };
   if (expectedSignature === req.body.response.razorpay_signature){
       response = { signatureIsValid: "true" };
+      mailController.sendmail(req, res);
        User.update(
         {
             orderId:req.body.response.razorpay_order_id,

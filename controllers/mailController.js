@@ -19,7 +19,7 @@ const sendmail = (req, res) => {
       subject: "Welcome to Athena'22 !",
       html: `<center> <img src="https://athena.istetkmce.in/assets/img/athena.png" alt="athena logo" width="100" ></center>Greetings from ISTE TKMCE,<br><br>
       Great to have you on board, ${req.body.name} ! You are the Face of Athena'22 at ${req.body.college} ! <br><br>
-      We will get in touch with you soon. <br><br>
+      We will get in touch with you soon. <br><br> ${req.body.response.razorpay_payment_id}
     
       
       Regards,<br>
