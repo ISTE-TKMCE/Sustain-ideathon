@@ -41,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     email:{
       type: DataTypes.STRING,
       allowNull:false,
+      unique:true,
       validate:{
         notEmpty : true
       }
@@ -113,9 +114,19 @@ module.exports = (sequelize, DataTypes) => {
 
     refid:{
       type: DataTypes.STRING,
-      allowNull:false
     },
 
+    orderId:{
+      type: DataTypes.STRING,
+    },
+
+    paymentId:{
+      type: DataTypes.STRING,
+    },
+
+    paymentSignature:{
+      type: DataTypes.STRING,
+    },
 
   }, {
     sequelize,

@@ -479,6 +479,7 @@
 
             //starting verification
             document.getElementById('submitBtn').innerHTML = '<i class="fa fa-refresh fa-spin"></i>  Verifying'
+            const email = document.getElementById('email').value;
 
             var data = {
               url: "/api/payment/verify",
@@ -487,7 +488,7 @@
               headers: {
                 "Content-Type": "application/json",
               },
-              data: JSON.stringify({ response }),
+              data: JSON.stringify({ response , email }),
             };
 
             $.ajax(data).done(function (response) {

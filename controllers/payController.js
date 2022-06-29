@@ -8,9 +8,12 @@ const addUserWithoutPayment = async (req, res) => {
       console.log("adding");
       res.json({ Ok: true });
     })
-    .catch((err) => {
+    .catch(async (err) => {
       console.log(err);
-      res.json({ Ok: false, message: "Something went wrong" });
+      if(err.name == 'SequelizeUniqueConstraintError'){
+        const user =   await User.findOne({ where: { email: req.body.email } })
+        user.paymentId ?  res.json({ Ok: false, message: "Already registered" }) : res.json({ Ok: true });
+      }else res.json({ Ok: false, message: "Something went wrong" });
     });
 };
 
@@ -43,8 +46,20 @@ const verifyPayment = (req, res) => {
   console.log("sig received ", req.body.response.razorpay_signature);
   console.log("sig generated ", expectedSignature);
   var response = { signatureIsValid: "false" };
-  if (expectedSignature === req.body.response.razorpay_signature)
-    response = { signatureIsValid: "true" };
+  if (expectedSignature === req.body.response.razorpay_signature){
+      response = { signatureIsValid: "true" };
+       User.update(
+        {
+            orderId:req.body.response.razorpay_order_id,
+            paymentSignature: req.body.response.razorpay_signature,
+            paymentId : req.body.response.razorpay_payment_id
+            
+        },
+        {where:{email: req.body.email}}
+        )
+    .then(result =>console.log(result))
+    .catch(err => console.log(err))
+  }
   res.send(response);
 };
 
