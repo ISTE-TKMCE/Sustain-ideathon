@@ -438,7 +438,56 @@
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
+    
+    <!-- ............................................ -->
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+
+    <!-- Template Main JS File -->
+    <script src="assets/js/main.js"></script>
     <script>
+      var chk = document.getElementById("refCheck");
+      var refbx = document.getElementById("refid");
+      chk.addEventListener("change", (e) => {
+        if (chk.checked) {
+          refbx.setAttribute("required", "");
+          refbx.style.display = "block";
+        } else {
+          refbx.style.display = "none";
+          refbx.value = "";
+          refbx.removeAttribute("required", "");
+        }
+      });
+
+      //form submit
+      document.forms["idea-form"].addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        document.getElementById('submitBtn').innerHTML = '<i class="fa fa-spinner fa-spin"></i>  Loading'
+        fetch(event.target.action, { method: "POST", body: new URLSearchParams(new FormData(event.target)) })
+          .then((resp) =>   resp.json())
+          .then((body) => {
+            console.log(body);
+            if(body.Ok) {
+              initPayment()
+            }else{
+              alert(body.message);
+              document.getElementById('submitBtn').innerHTML = 'Submit';
+            }
+          })
+          .catch((error) => {
+            console.log(error)
+            document.getElementById('submitBtn').innerHTML = 'Submit';
+            alert('Something went wrong, Please try again later')
+          });
+      });
+    
       var orderId;
       $(document).ready(function () {
         var settings = {
@@ -517,54 +566,5 @@
       };
     </script>
 
-    <!-- ............................................ -->
-
-    <!-- Vendor JS Files -->
-    <script src="assets/vendor/aos/aos.js"></script>
-    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-    <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-    <script src="assets/vendor/php-email-form/validate.js"></script>
-
-    <!-- Template Main JS File -->
-    <script src="assets/js/main.js"></script>
-    <script>
-      var chk = document.getElementById("refCheck");
-      var refbx = document.getElementById("refid");
-      chk.addEventListener("change", (e) => {
-        if (chk.checked) {
-          refbx.setAttribute("required", "");
-          refbx.style.display = "block";
-        } else {
-          refbx.style.display = "none";
-          refbx.value = "";
-          refbx.removeAttribute("required", "");
-        }
-      });
-
-      //form submit
-      document.forms["idea-form"].addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        document.getElementById('submitBtn').innerHTML = '<i class="fa fa-spinner fa-spin"></i>  Loading'
-        fetch(event.target.action, { method: "POST", body: new URLSearchParams(new FormData(event.target)) })
-          .then((resp) =>   resp.json())
-          .then((body) => {
-            console.log(body);
-            if(body.Ok) {
-              initPayment()
-            }else{
-              alert(body.message);
-              document.getElementById('submitBtn').innerHTML = 'Submit';
-            }
-          })
-          .catch((error) => {
-            console.log(error)
-            document.getElementById('submitBtn').innerHTML = 'Submit';
-            alert('Something went wrong, Please try again later')
-          });
-      });
-    </script>
   </body>
 </html>
