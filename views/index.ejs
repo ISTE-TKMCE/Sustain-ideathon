@@ -560,6 +560,7 @@
             }
           })
           .catch((error) => {
+            console.log(error)
             document.getElementById('submitBtn').innerHTML = 'Submit';
             alert('Something went wrong, Please try again later')
           });
