@@ -452,7 +452,7 @@
     <!-- Template Main JS File -->
     <script src="assets/js/main.js"></script>
     <script>
-import $ from "http://code.jquery.com/jquery-1.11.0.min.js"
+
       
 const initPayment =  () => {
         var options = {
@@ -481,7 +481,7 @@ const initPayment =  () => {
               },
               data: JSON.stringify({ response , email,name,college }),
             };
-
+            
             $.ajax(data).done(function (response) {
               console.log(response);
 
