@@ -399,7 +399,7 @@
                     class="btn"
                     style="border: 1px solid #7cc576"
                   >
-                    Register ₹ <%=amount%>
+                    Register
                   </button>
                 </div>
               </form>
@@ -556,7 +556,8 @@
           .then((body) => {
             console.log(body);
             if(body.Ok) {
-              initPayment()
+              // initPayment()
+              window.location="/welcome";
             }else{
               alert(body.message);
               document.getElementById('submitBtn').innerHTML = 'Submit';
